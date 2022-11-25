@@ -1,0 +1,79 @@
+private static void setupLibrary() {  
+    /* 
+       * For using over http:// and https:// 
+       */  
+    DAVRepositoryFactory.setup();  
+    /* 
+       * For using over svn:// and svn+xxx:// 
+       */  
+    SVNRepositoryFactoryImpl.setup();  
+  
+    /* 
+       * For using over file:/// 
+       */  
+    FSRepositoryFactory.setup();  
+  }  
+  
+public static void main(String[] args) throws SVNException {  
+    setupLibrary();  
+  
+    SVNURL repositoryURL = null;  
+    try {  
+     //设置SVN服务器的URL  
+      repositoryURL =  
+          SVNURL.parseURIEncoded("https://192.168.88.88:8443/svn/test");  
+    } catch (SVNException e) {  
+      error("get respository url error!", e);  
+    }  
+   //设置登录用户与密码  
+    String name = "king";  
+    String password = "88888888";  
+    String myWorkingCopyPath = "F:\\arc";  
+  
+    ISVNOptions options = SVNWCUtil.createDefaultOptions(true);  
+    ISVNAuthenticationManager authManager =  
+      SVNWCUtil.createDefaultAuthenticationManager(name, password);  
+    File wcDir = new File(myWorkingCopyPath);  
+    if (!wcDir.exists()) {  
+      error("the work copy directory '" + wcDir.getAbsolutePath() +  
+            "' was not exists!", null);  
+      return;  
+    }  
+    ourClientManager = SVNClientManager.newInstance(options, authManager);  
+  
+    //查询状态  
+    boolean isRecursive = true;  
+    boolean isRemote = true;  
+    boolean isReportAll = false;  
+    boolean isIncludeIgnored = true;  
+    boolean isCollectParentExternals = false;  
+    File[] unVF = null;  
+    System.out.println("Status for '" + wcDir.getAbsolutePath() + "':");  
+    try {  
+      List unVerFiles =  
+        showStatus(wcDir, isRecursive, isRemote, isReportAll, isIncludeIgnored,  
+                   isCollectParentExternals);  
+    } catch (SVNException svne) {  
+      error("error while recursively performing status for '" +  
+            wcDir.getAbsolutePath() + "'", svne);  
+    }  
+  
+    //copy to temp file  
+    if (unVF != null) {  
+      File anImportDir = new File(importFile);  
+      createLocalDir(anImportDir, unVF);  
+    }  
+  }  
+/** 
+*主要是查询状态 
+*/  
+private static void showStatus(File wcPath, boolean isRecursive,  
+                                 boolean isRemote, boolean isReportAll,  
+                                 boolean isIncludeIgnored,  
+                                 boolean isCollectParentExternals) throws SVNException {  
+   //定义状态管理类  
+    StatusHandler sh = new StatusHandler(isRemote);  
+    ourClientManager.getStatusClient().doStatus(wcPath, isRecursive, isRemote,  
+                                                isReportAll, isIncludeIgnored,  
+                                                isCollectParentExternals, sh);  
+  }  
