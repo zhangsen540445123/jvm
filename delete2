@@ -1,0 +1,92 @@
+public void handleStatus(SVNStatus status) {  
+        /* 
+         * Gets  the  status  of  file/directory/symbolic link  text  contents.  
+         * It is  SVNStatusType  who  contains  information on the state of  an  
+         * item.  
+         */  
+        SVNStatusType contentsStatus = status.getContentsStatus();  
+  
+        String pathChangeType = " ";  
+          
+        boolean isAddedWithHistory = status.isCopied();  
+        if (contentsStatus == SVNStatusType.STATUS_MODIFIED) {  
+            /* 
+             * The contents of the file have been Modified. 
+             */  
+            pathChangeType = "M";  
+        } else if (contentsStatus == SVNStatusType.STATUS_CONFLICTED) {  
+            /* 
+             * The  file  item  is  in a state of  Conflict. That  is,  changes  
+             * received from the server during an  update  overlap  with  local  
+             * changes the user has in his working copy.  
+             */  
+            pathChangeType = "C";  
+        } else if (contentsStatus == SVNStatusType.STATUS_DELETED) {  
+            /* 
+             * The file, directory or symbolic link item has been scheduled for  
+             * Deletion from the repository. 
+             */  
+            pathChangeType = "D";  
+        } else if (contentsStatus == SVNStatusType.STATUS_ADDED) {  
+            /* 
+             * The file, directory or symbolic link item has been scheduled for  
+             * Addition to the repository. 
+             */  
+            pathChangeType = "A";  
+        } else if (contentsStatus == SVNStatusType.STATUS_UNVERSIONED) {  
+            /* 
+             * The file, directory or symbolic link item is not  under  version  
+             * control. 
+             */  
+            pathChangeType = "?";  
+        } else if (contentsStatus == SVNStatusType.STATUS_EXTERNAL) {  
+            /* 
+             * The item is unversioned, but is used by an eXternals definition. 
+             */  
+            pathChangeType = "X";  
+        } else if (contentsStatus == SVNStatusType.STATUS_IGNORED) {  
+            /* 
+             * The file, directory or symbolic link item is not  under  version  
+             * control, and is configured to be Ignored during 'add',  'import'  
+             * and 'status' operations.  
+             */  
+            pathChangeType = "I";  
+        } else if (contentsStatus == SVNStatusType.STATUS_MISSING  
+                || contentsStatus == SVNStatusType.STATUS_INCOMPLETE) {  
+            /* 
+             * The file, directory or  symbolic  link  item  is  under  version  
+             * control but is missing or somehow incomplete. The  item  can  be  
+             * missing if it is removed using a command incompatible  with  the  
+             * native Subversion command line client (for example, just removed  
+             * from the filesystem). In the case the item is  a  directory,  it  
+             * can  be  incomplete if the user happened to interrupt a checkout  
+             * or update. 
+             */  
+            pathChangeType = "!";  
+        } else if (contentsStatus == SVNStatusType.STATUS_OBSTRUCTED) {  
+            /* 
+             * The file, directory or symbolic link item is in  the  repository  
+             * as one kind of object, but what's actually in the user's working  
+             * copy is some other kind. For example, Subversion  might  have  a  
+             * file in the repository,  but  the  user  removed  the  file  and  
+             * created a directory in its place, without using the 'svn delete'  
+             * or 'svn add' command (or SVNKit analogues for them). 
+             */  
+            pathChangeType = "~";  
+        } else if (contentsStatus == SVNStatusType.STATUS_REPLACED) {  
+            /* 
+             * The file, directory or symbolic link item was  Replaced  in  the  
+             * user's working copy; that is, the item was deleted,  and  a  new  
+             * item with the same name was added (within  a  single  revision).  
+             * While they may have the same name, the repository considers them  
+             * to be distinct objects with distinct histories. 
+             */  
+            pathChangeType = "R";  
+        } else if (contentsStatus == SVNStatusType.STATUS_NONE  
+                || contentsStatus == SVNStatusType.STATUS_NORMAL) {  
+            /* 
+             * The item was not modified (normal). 
+             */  
+            pathChangeType = " ";  
+        }  
+｝  
